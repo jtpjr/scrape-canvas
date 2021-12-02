@@ -1,29 +1,28 @@
 # Canvas scraper
-Forked from [Koenvh1](https://gist.github.com/Koenvh1/6386f8703766c432eb4dfa19acdb0244)
+Forked from [john-hix](https://github.com/john-hix/scrape-canvas) > [Koenvh1](https://gist.github.com/Koenvh1/6386f8703766c432eb4dfa19acdb0244)
+
+# Changes from upstream:
+**Implemented:**
+* Will create folders from "pages", for a more familiar navigation. 
+
+**Not yet implemented:**
+* Download videos from links*
+
+\*Currently only videos from "instructuremedia.com/embed/"
+
+# Features
+* TODO
 
 # Please double-check the data
-Often professors will embed videos that require authentication to view, etc.
-At time of writing, this script does not handle such embeds.
 Please make sure you can view all resources offline without connecting to a server
-before calling your import done.
+before calling your import done. This script does not cover all cases!
 
-# Docker
-A Docker image is provided for convenience. You can configure it to write to a
-data directory of your choice. To make a data directory named `data` and bind
-mount it to the Docker container, perform the following commands:
-
-`mkdir ./data`
-
-```
-docker run \
-  -u "$(id -u)" \
-  -v "$(pwd)"/data:/usr/src/app/data \
-  johnhix/scrape-canvas:0.0.2 \
-  https://institution.canvas-address.edu \
-  canvas-api-key \
-  ./data \
-  all
-
-```
-The last option, `all`, can be replaced with a comma-separated list
-of course ids.
+# Running:
+* Install python 3+ if not already installed.
+* Get a access token from your settings page (canvas).
+* Run as a script: ```python canvas-scraper.py link_to_your_canvas your_access_token output_path course_ids```
+  - For the link, use **https!** Othervise your token will be sent **unecrypted**.
+  - The script fill create the output folder if it does not exist.
+  - The script will overwrite earlier files that have the same name as what is being written (if run previously in same location)
+  - For the course_ids, it is the last number in the course homepage link, separate multiple with commas.
+* You may need to install missing libraries with ```pip install```. (probably ```pip install canvasapi```)
