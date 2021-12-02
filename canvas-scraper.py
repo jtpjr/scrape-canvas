@@ -16,11 +16,24 @@ def extract_files(text):
     groups = set(text_search)
     return groups
 
+
+def extract_instructure(text):
+    #Mer försiktig version, endast instructuremedia
+    embeded = re.findall(r"(http:|https:[^\s]*?instructuremedia.com/embed/([a-z\-0-9]+))", text, re.IGNORECASE)
+    #Returnerar innehållet inom paranteserna, dvs lista med (länk, id)
+    
+    #Fräck version, byta namn på funktion om använd
+    #embeded = re.findall(r"(http:|https:[^\s]*?embed/([a-z\-0-9]+))", text, re.IGNORECASE) 
+    return embeded
+
+
 def get_course_files(course):
     modules = course.get_modules()
 
     files_downloaded = set() # Track downloaded files for this course to avoid duplicates
-
+    
+    instructureVideos_downloaded = set() # Track downloaded videos from instructuremedia to avoid duplicates
+    
     for module in modules:
         module: Module = module
         module_items = module.get_module_items()
@@ -48,7 +61,21 @@ def get_course_files(course):
                 file.download(path + sanitize_filename(file.filename))
             elif item_type == "Page":
                 page = course.get_page(item.page_url)
-                with open(path + sanitize_filename(item.title) + ".html", "w", encoding="utf-8") as f:
+
+                #Error if placed in below try statement + done once
+                nicetitle = item.title.replace("\/", " ") #Replace / with space. ex: "1/2" -> "1 2" instead of -> "12"
+                
+                try: #Subfolders for each page contents
+                    pagepath = f"{output}/" \
+                        f"{sanitize_filename(course.name)}/" \
+                        f"{sanitize_filename(module.name)}/" \
+                        f"{sanitize_filename(nicetitle)}/"
+                except Exception as e:
+                    print(e)
+                    continue
+                if not os.path.exists(pagepath):
+                    os.makedirs(pagepath)
+                with open(pagepath + sanitize_filename(nicetitle) + ".html", "w", encoding="utf-8") as f:
                     f.write(page.body or "")
                 files = extract_files(page.body or "")
                 for file_id in files:
@@ -57,7 +84,17 @@ def get_course_files(course):
                     try:
                         file = course.get_file(file_id)
                         files_downloaded.add(file_id)
-                        file.download(path + sanitize_filename(file.filename))
+                        file.download(pagepath + sanitize_filename(file.filename))
+                    except ResourceDoesNotExist:
+                        pass
+                videos = extract_instructure(page.body or "") #Videos hosted on instructuremedia.com
+                for video in videos:
+                    print(video[0]) #debug
+                    if video[1] in instructureVideos_downloaded:
+                        continue
+                    try:
+                        #fuya_downloader(video[0]) #TODO
+                        instructureVideos_downloaded.add(video[1])
                     except ResourceDoesNotExist:
                         pass
             elif item_type == "ExternalUrl":
@@ -92,6 +129,9 @@ def get_course_files(course):
     except Unauthorized:
         pass
 
+    #debug2
+    print("Downloaded:")
+    print(instructureVideos_downloaded)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download all content from Canvas")
