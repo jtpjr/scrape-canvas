@@ -6,7 +6,9 @@ Forked from [john-hix](https://github.com/john-hix/scrape-canvas) > [Koenvh1](ht
 * Will create folders from "pages", for a more familiar navigation. 
 
 **Not yet implemented:**
-* Download videos from links*
+* Download videos* from links
+* Download embedded videos*
+* Fix handling of special characters see [issue](https://github.com/MrRinkana/scrape-canvas/issues/3#issue-1070045519)
 
 \*Currently only videos from "instructuremedia.com/embed/"
 
@@ -15,7 +17,7 @@ Forked from [john-hix](https://github.com/john-hix/scrape-canvas) > [Koenvh1](ht
 
 # Please double-check the data
 Please make sure you can view all resources offline without connecting to a server
-before calling your import done. This script does not cover all cases!
+before calling your import done. This script does not cover all cases! You may need to fix/download things manually!
 
 # Running:
 * Install python 3+ if not already installed.
