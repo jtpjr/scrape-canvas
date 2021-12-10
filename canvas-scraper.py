@@ -16,7 +16,9 @@ def extract_files(text):
     groups = set(text_search)
     return groups
     
-    
+#---------------------------------------------------------
+#Under construction:
+
 def extract_video(text): #Extracts videos that are uploaded to canvas (instructure)
     #Currently only handles linked videos, and does not download, only provide link.
 
@@ -26,15 +28,33 @@ def extract_video(text): #Extracts videos that are uploaded to canvas (instructu
     longRegex = r"(http:|https:[^\s]*?canvas\.[^\s]*?\/courses\/[\d+][^\s]*?\/external_tools\/retrieve[^\s]*?instructuremedia\.com[^\s]+)"
     embedded = link_follow(re.findall(longRegex, text, re.IGNORECASE))
     
-    videos = linked embedded
+    videos = linked; embedded
     
     return videos
     
-def link_follow(link)
+def link_follow(link):
     #TODO magi
     #Handle following links that require authentication, such as redirects (see issue #2 github)
     return ""
 
+#Purpouse: handle indent based hiearchy
+def posToPath(items, basePath): #Should create a list containing paths corres objects
+    items.sort(key=lambda x: x.position, reverse=True)
+
+    posPath = []
+
+    #logic and recurPath()
+
+    return posPath
+
+def recurPath(items, posPath, path):
+    #Recursive traversal
+    #Problem: items is not list, but paginatedList (from canvasapi)
+    #if items ...
+    return ""
+
+#Proper hiearchy may need revision of how folders are created -> change sequence of events in main script?
+#----------------------------------------------------------
 
 def get_course_files(course):
     modules = course.get_modules()
