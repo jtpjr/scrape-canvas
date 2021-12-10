@@ -15,16 +15,25 @@ def extract_files(text):
     text_search = re.findall("/files/(\\d+)", text, re.IGNORECASE)
     groups = set(text_search)
     return groups
-
-
-def extract_instructure(text):
-    #Mer försiktig version, endast instructuremedia
-    embeded = re.findall(r"(http:|https:[^\s]*?instructuremedia.com/embed/([a-z\-0-9]+))", text, re.IGNORECASE)
-    #Returnerar innehållet inom paranteserna, dvs lista med (länk, id)
     
-    #Fräck version, byta namn på funktion om använd
-    #embeded = re.findall(r"(http:|https:[^\s]*?embed/([a-z\-0-9]+))", text, re.IGNORECASE) 
-    return embeded
+    
+def extract_video(text): #Extracts videos that are uploaded to canvas (instructure)
+    #Currently only handles linked videos, and does not download, only provide link.
+
+                                                
+    linked = re.findall(r"(http:|https:[^\s]*?instructuremedia.com/embed/([a-z\-0-9]+))", text, re.IGNORECASE)
+    #Returnerar innehållet inom paranteserna, dvs lista med (länk, id)
+    longRegex = r"(http:|https:[^\s]*?canvas\.[^\s]*?\/courses\/[\d+][^\s]*?\/external_tools\/retrieve[^\s]*?instructuremedia\.com[^\s]+)"
+    embedded = link_follow(re.findall(longRegex, text, re.IGNORECASE))
+    
+    videos = linked embedded
+    
+    return videos
+    
+def link_follow(link)
+    #TODO magi
+    #Handle following links that require authentication, such as redirects (see issue #2 github)
+    return ""
 
 
 def get_course_files(course):
@@ -32,7 +41,7 @@ def get_course_files(course):
 
     files_downloaded = set() # Track downloaded files for this course to avoid duplicates
     
-    instructureVideos_downloaded = set() # Track downloaded videos from instructuremedia to avoid duplicates
+    videos_downloaded = set() # Track downloaded videos from instructuremedia to avoid duplicates
     
     for module in modules:
         module: Module = module
@@ -87,16 +96,18 @@ def get_course_files(course):
                         file.download(pagepath + sanitize_filename(file.filename))
                     except ResourceDoesNotExist:
                         pass
-                videos = extract_instructure(page.body or "") #Videos hosted on instructuremedia.com
+#--------------------------------------------------------------- IN CONSTRUCTION!
+                videos = extract_video(page.body or "") #Videos hosted on instructuremedia.com
                 for video in videos:
                     print(video[0]) #debug
-                    if video[1] in instructureVideos_downloaded:
+                    if video[1] in videos_downloaded:
                         continue
                     try:
                         #fuya_downloader(video[0]) #TODO
-                        instructureVideos_downloaded.add(video[1])
+                        videos_downloaded.add(video[1])
                     except ResourceDoesNotExist:
                         pass
+#--------------------------------------------------------------- 
             elif item_type == "ExternalUrl":
                 url = item.external_url
                 with open(path + sanitize_filename(item.title) + ".url", "w") as f:
@@ -131,7 +142,7 @@ def get_course_files(course):
 
     #debug2
     print("Downloaded:")
-    print(instructureVideos_downloaded)
+    print(videos_downloaded)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download all content from Canvas")
