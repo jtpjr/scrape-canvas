@@ -6,7 +6,7 @@ import re
 from pathvalidate import sanitize_filename
 from canvasapi import Canvas
 from canvasapi.course import Course
-from canvasapi.exceptions import Unauthorized, ResourceDoesNotExist
+from canvasapi.exceptions import Unauthorized, ResourceDoesNotExist, Forbidden, ResourceDoesNotExist
 from canvasapi.file import File
 from canvasapi.module import Module, ModuleItem
 
@@ -195,4 +195,9 @@ if __name__ == "__main__":
     # Perform scrape
     for course in courses:
         course: Course = course
-        get_course_files(course)
+        try:
+            get_course_files(course)
+        except Forbidden:
+                continue
+        except ResourceDoesNotExist:
+                continue
