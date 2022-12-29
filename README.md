@@ -1,5 +1,5 @@
 # Canvas scraper
-Forked from [john-hix](https://github.com/john-hix/scrape-canvas) > [Koenvh1](https://gist.github.com/Koenvh1/6386f8703766c432eb4dfa19acdb0244)
+Forked from [john-hix](https://github.com/john-hix/scrape-canvas) > [Koenvh1](https://gist.github.com/Koenvh1/6386f8703766c432eb4dfa19acdb0244) > jtpjr
 
 # Changes from upstream:
 **Implemented:**
