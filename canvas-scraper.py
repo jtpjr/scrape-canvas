@@ -201,3 +201,5 @@ if __name__ == "__main__":
                 continue
         except ResourceDoesNotExist:
                 continue
+        except FileNotFoundError: 
+                continue
